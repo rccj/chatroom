@@ -1,13 +1,7 @@
-import { Button } from "@/components/ui/button"
+import { HomePage } from "@/pages/home"
+
 function App() {
-	return (
-		<div>
-			<div className="flex flex-col items-center justify-center h-screen">
-				<Button>Join Room</Button>
-				<h1 className="text-4xl font-bold">Chat Room</h1>
-			</div>
-		</div>
-	)
+	return <HomePage />
 }
 
 export default App
