@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { RootLayout } from "@/components/layout/root-layout"
 import { HomePage } from "@/pages/home"
 import { ChatPage } from "@/pages/chat"
+import { ChatRoomPage } from "@/pages/chat/[id]"
 import { NotFoundPage } from "@/pages/not-found"
 import { useChatStore } from "@/stores/chat"
 
@@ -19,6 +20,14 @@ const router = createBrowserRouter([
 				element: (
 					<ProtectedRoute>
 						<ChatPage />
+					</ProtectedRoute>
+				),
+			},
+			{
+				path: "chat/:id",
+				element: (
+					<ProtectedRoute>
+						<ChatRoomPage />
 					</ProtectedRoute>
 				),
 			},

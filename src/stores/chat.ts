@@ -1,11 +1,11 @@
 import { create } from "zustand"
 
-interface User {
-	id: string
+export interface User {
+	id: string | number
 	name: string
 }
 
-interface ChatStore {
+export interface ChatStore {
 	user: User | null
 	setUser: (user: User) => void
 	clearUser: () => void
