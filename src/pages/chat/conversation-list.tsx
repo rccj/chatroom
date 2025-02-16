@@ -27,7 +27,7 @@ export function ConversationList() {
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center justify-between">
 							<h3 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h3>
-							<span className="text-sm text-gray-500">{formatMessageDate(conversation.timestamp)}</span>
+							<span className="text-sm text-gray-500">{formatMessageDate(conversation.timestamp, true)}</span>
 						</div>
 						<p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
 					</div>

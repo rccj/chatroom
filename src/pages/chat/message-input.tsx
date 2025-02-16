@@ -24,9 +24,9 @@ export function MessageInput({ conversationId }: MessageInputProps) {
 		try {
 			const newMessage = {
 				conversationId,
-				userId: Number(user.id),
-				user: user.name,
-				avatar: `https://i.pravatar.cc/150?img=${user.id}`,
+				userId: user.userId,
+				user: user.user,
+				avatar: user.avatar,
 				messageType: "text" as const,
 				message: message.trim(),
 				timestamp: Date.now(),

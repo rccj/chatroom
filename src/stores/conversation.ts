@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Conversation, Message } from "@/types/chat"
 import { getConversations, getMessages } from "@/api"
+import { STORAGE_KEYS } from "@/api/storage-keys"
 
 interface ConversationStore {
 	conversations: Conversation[]
@@ -30,12 +31,51 @@ export const useConversationStore = create<ConversationStore>()(
 			setCurrentConversation: (id) => set({ currentConversation: id }),
 
 			addMessage: (conversationId, message) =>
-				set((state) => ({
-					messages: {
+				set((state) => {
+					// 更新訊息列表
+					const newMessages = {
 						...state.messages,
 						[conversationId]: [...(state.messages[conversationId] || []), message],
-					},
-				})),
+					}
+
+					// 更新對話列表
+					const updatedConversations = state.conversations.map((item) =>
+						item.id === conversationId
+							? {
+									...item,
+									lastMessage: message.message,
+									timestamp: message.timestamp,
+									participants:
+										item.participants[0].userId === message.userId
+											? [
+													{
+														userId: message.userId,
+														user: message.user,
+														avatar: message.avatar,
+													},
+													item.participants[1],
+												]
+											: [
+													{
+														userId: message.userId,
+														user: message.user,
+														avatar: message.avatar,
+													},
+													item.participants[0],
+												],
+								}
+							: item,
+					)
+
+					// 重新排序對話列表
+					const sortedConversations = [...updatedConversations].sort((a, b) => b.timestamp - a.timestamp)
+					localStorage.setItem(STORAGE_KEYS.CONVERSATIONS, JSON.stringify(sortedConversations))
+
+					return {
+						messages: newMessages,
+						conversations: sortedConversations,
+					}
+				}),
 
 			addReaction: (timestamp, type) =>
 				set((state) => {

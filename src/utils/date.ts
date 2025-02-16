@@ -1,11 +1,11 @@
 import { format, isToday, isYesterday } from "date-fns"
 import { zhTW } from "date-fns/locale"
 
-export function formatMessageDate(timestamp: number) {
+export function formatMessageDate(timestamp: number, isDetail = false) {
 	const date = new Date(timestamp)
 
 	if (isToday(date)) {
-		return format(date, "aa hh:mm", { locale: zhTW })
+		return isDetail ? format(date, "aa hh:mm", { locale: zhTW }) : "今天"
 	}
 
 	if (isYesterday(date)) {
