@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import type { Conversation, Message } from "@/types/chat"
-import chatData from "@/chat_data.json"
+import { getConversations } from "@/api/conversations"
+import { getMessages } from "@/api/messages"
 
 interface ConversationStore {
 	conversations: Conversation[]
@@ -9,8 +10,9 @@ interface ConversationStore {
 
 	// Actions
 	setCurrentConversation: (id: number) => void
-	addMessage: (conversationId: number, message: Omit<Message, "reactions">) => void
+	addMessage: (conversationId: number, message: Message) => void
 	addReaction: (timestamp: number, type: "like" | "love" | "laugh") => void
+	setMessages: (conversationId: number, messages: Message[]) => void
 
 	// API 模擬
 	fetchConversations: () => Promise<void>
@@ -26,19 +28,10 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 
 	addMessage: (conversationId, message) => {
 		const messages = get().messages
-		const newMessage = {
-			...message,
-			reactions: {
-				like: 0,
-				love: 0,
-				laugh: 0,
-			},
-		}
-
 		set({
 			messages: {
 				...messages,
-				[conversationId]: [...(messages[conversationId] || []), newMessage],
+				[conversationId]: [...(messages[conversationId] || []), message],
 			},
 		})
 	},
@@ -64,19 +57,25 @@ export const useConversationStore = create<ConversationStore>((set, get) => ({
 		set({ messages: updatedMessages })
 	},
 
-	fetchConversations: async () => {
-		// 模擬 API 延遲
-		await new Promise((resolve) => setTimeout(resolve, 500))
-		set({ conversations: chatData.conversations })
-	},
-
-	fetchMessages: async (conversationId) => {
-		await new Promise((resolve) => setTimeout(resolve, 500))
-		const messages = chatData.messages.filter((msg) => msg.conversationId === conversationId)
+	setMessages: (conversationId, messages) =>
 		set((state) => ({
 			messages: {
 				...state.messages,
 				[conversationId]: messages,
+			},
+		})),
+
+	fetchConversations: async () => {
+		const response = await getConversations()
+		set({ conversations: response.data })
+	},
+
+	fetchMessages: async (conversationId) => {
+		const response = await getMessages(conversationId)
+		set((state) => ({
+			messages: {
+				...state.messages,
+				[conversationId]: response.data,
 			},
 		}))
 	},

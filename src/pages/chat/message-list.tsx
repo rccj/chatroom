@@ -11,7 +11,6 @@ interface MessageListProps {
 
 export function MessageList({ messages, currentUser }: MessageListProps) {
 	const { addReaction } = useConversationStore()
-	console.log({ messages })
 	return (
 		<div className="space-y-4">
 			{messages.map((message) => (
