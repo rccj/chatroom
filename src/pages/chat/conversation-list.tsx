@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { useConversationStore } from "@/stores/conversation"
-import { formatDistanceToNow } from "date-fns"
-import { zhTW } from "date-fns/locale"
+import { formatMessageDate } from "@/utils/date"
 
 export function ConversationList() {
 	const navigate = useNavigate()
@@ -28,12 +27,7 @@ export function ConversationList() {
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center justify-between">
 							<h3 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h3>
-							<span className="text-sm text-gray-500">
-								{formatDistanceToNow(conversation.timestamp, {
-									addSuffix: true,
-									locale: zhTW,
-								})}
-							</span>
+							<span className="text-sm text-gray-500">{formatMessageDate(conversation.timestamp)}</span>
 						</div>
 						<p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
 					</div>
