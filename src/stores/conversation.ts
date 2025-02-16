@@ -1,7 +1,7 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware"
 import type { Conversation, Message } from "@/types/chat"
-import { getConversations } from "@/api/conversations"
-import { getMessages } from "@/api/messages"
+import { getConversations, getMessages } from "@/api"
 
 interface ConversationStore {
 	conversations: Conversation[]
@@ -17,66 +17,84 @@ interface ConversationStore {
 	// API 模擬
 	fetchConversations: () => Promise<void>
 	fetchMessages: (conversationId: number) => Promise<void>
+	clearAll: () => void
 }
 
-export const useConversationStore = create<ConversationStore>((set, get) => ({
-	conversations: [],
-	currentConversation: null,
-	messages: {},
+export const useConversationStore = create<ConversationStore>()(
+	persist(
+		(set) => ({
+			conversations: [],
+			currentConversation: null,
+			messages: {},
 
-	setCurrentConversation: (id) => set({ currentConversation: id }),
+			setCurrentConversation: (id) => set({ currentConversation: id }),
 
-	addMessage: (conversationId, message) => {
-		const messages = get().messages
-		set({
-			messages: {
-				...messages,
-				[conversationId]: [...(messages[conversationId] || []), message],
-			},
-		})
-	},
+			addMessage: (conversationId, message) =>
+				set((state) => ({
+					messages: {
+						...state.messages,
+						[conversationId]: [...(state.messages[conversationId] || []), message],
+					},
+				})),
 
-	addReaction: (timestampSelected, type) => {
-		const messages = get().messages
-		const updatedMessages = Object.entries(messages).reduce((acc, [timestamp, msgs]) => {
-			const newMsgs = msgs.map((msg) => {
-				if (msg.timestamp === timestampSelected) {
-					return {
-						...msg,
-						reactions: {
-							...msg.reactions,
-							[type]: msg.reactions[type] + 1,
-						},
+			addReaction: (timestamp, type) =>
+				set((state) => {
+					const messages = { ...state.messages }
+					for (const conversationId in messages) {
+						messages[conversationId] = messages[conversationId].map((msg) => {
+							if (msg.timestamp === timestamp) {
+								return {
+									...msg,
+									reactions: {
+										...msg.reactions,
+										[type]: msg.reactions[type] + 1,
+									},
+								}
+							}
+							return msg
+						})
 					}
-				}
-				return msg
-			})
-			return { ...acc, [timestamp]: newMsgs }
-		}, {})
+					return { messages }
+				}),
 
-		set({ messages: updatedMessages })
-	},
+			setMessages: (conversationId, messages) =>
+				set((state) => ({
+					messages: {
+						...state.messages,
+						[conversationId]: messages,
+					},
+				})),
 
-	setMessages: (conversationId, messages) =>
-		set((state) => ({
-			messages: {
-				...state.messages,
-				[conversationId]: messages,
+			fetchConversations: async () => {
+				const response = await getConversations()
+				set({ conversations: response.data })
 			},
-		})),
 
-	fetchConversations: async () => {
-		const response = await getConversations()
-		set({ conversations: response.data })
-	},
-
-	fetchMessages: async (conversationId) => {
-		const response = await getMessages(conversationId)
-		set((state) => ({
-			messages: {
-				...state.messages,
-				[conversationId]: response.data,
+			fetchMessages: async (conversationId) => {
+				const response = await getMessages(conversationId)
+				set((state) => ({
+					messages: {
+						...state.messages,
+						[conversationId]: response.data,
+					},
+				}))
 			},
-		}))
-	},
-}))
+
+			clearAll: () => {
+				set({
+					conversations: [],
+					currentConversation: null,
+					messages: {},
+				})
+			},
+		}),
+		{
+			name: "chat-storage", // localStorage 的 key
+			partialize: (state) => ({
+				// 只持久化這些資料
+				conversations: state.conversations,
+				messages: state.messages,
+			}),
+		},
+	),
+)

@@ -7,7 +7,7 @@ import { ConversationList } from "@/pages/chat/conversation-list"
 export function ChatPage() {
 	const navigate = useNavigate()
 	const { user, clearUser } = useChatStore()
-	const { conversations, fetchConversations } = useConversationStore()
+	const { fetchConversations, clearAll } = useConversationStore()
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
@@ -28,8 +28,20 @@ export function ChatPage() {
 		loadConversations()
 	}, [fetchConversations])
 
+	useEffect(() => {
+		// 在關閉視窗時清除資料
+		const handleBeforeUnload = () => {
+			clearAll()
+			localStorage.clear() // 或是只清除特定的 key
+		}
+
+		window.addEventListener("beforeunload", handleBeforeUnload)
+		return () => window.removeEventListener("beforeunload", handleBeforeUnload)
+	}, [clearAll])
+
 	const handleLogout = () => {
 		clearUser()
+		clearAll() // 登出時清除聊天資料
 		navigate("/")
 	}
 
