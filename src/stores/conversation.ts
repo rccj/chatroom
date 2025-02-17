@@ -2,7 +2,6 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Conversation, Message } from "@/types/chat"
 import { getConversations, getMessages } from "@/api"
-import { STORAGE_KEYS } from "@/api/storage-keys"
 
 interface ConversationStore {
 	conversations: Conversation[]
@@ -11,7 +10,7 @@ interface ConversationStore {
 
 	// Actions
 	setCurrentConversation: (id: number) => void
-	addMessage: (conversationId: number, message: Message) => void
+	addMessage: (conversationId: number, message: Omit<Message, "id" | "reactions">) => void
 	addReaction: (timestamp: number, type: "like" | "love" | "laugh") => void
 	setMessages: (conversationId: number, messages: Message[]) => void
 
@@ -24,56 +23,25 @@ interface ConversationStore {
 export const useConversationStore = create<ConversationStore>()(
 	persist(
 		(set) => ({
+			messages: {},
 			conversations: [],
 			currentConversation: null,
-			messages: {},
 
 			setCurrentConversation: (id) => set({ currentConversation: id }),
 
-			addMessage: (conversationId, message) =>
+			addMessage: (conversationId: number, message: Omit<Message, "id" | "reactions">) =>
 				set((state) => {
-					// 更新訊息列表
-					const newMessages = {
-						...state.messages,
-						[conversationId]: [...(state.messages[conversationId] || []), message],
+					const newMessage = {
+						...message,
+						id: Date.now(),
+						reactions: { like: 0, love: 0, laugh: 0 },
 					}
 
-					// 更新對話列表
-					const updatedConversations = state.conversations.map((item) =>
-						item.id === conversationId
-							? {
-									...item,
-									lastMessage: message.message,
-									timestamp: message.timestamp,
-									participants:
-										item.participants[0].userId === message.userId
-											? [
-													{
-														userId: message.userId,
-														user: message.user,
-														avatar: message.avatar,
-													},
-													item.participants[1],
-												]
-											: [
-													{
-														userId: message.userId,
-														user: message.user,
-														avatar: message.avatar,
-													},
-													item.participants[0],
-												],
-								}
-							: item,
-					)
-
-					// 重新排序對話列表
-					const sortedConversations = [...updatedConversations].sort((a, b) => b.timestamp - a.timestamp)
-					localStorage.setItem(STORAGE_KEYS.CONVERSATIONS, JSON.stringify(sortedConversations))
-
 					return {
-						messages: newMessages,
-						conversations: sortedConversations,
+						messages: {
+							...state.messages,
+							[conversationId]: [...(state.messages[conversationId] || []), newMessage],
+						},
 					}
 				}),
 
@@ -129,9 +97,8 @@ export const useConversationStore = create<ConversationStore>()(
 			},
 		}),
 		{
-			name: "chat-storage", // localStorage 的 key
+			name: "chat-storage",
 			partialize: (state) => ({
-				// 只持久化這些資料
 				conversations: state.conversations,
 				messages: state.messages,
 			}),

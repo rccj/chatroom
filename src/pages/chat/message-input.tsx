@@ -17,23 +17,18 @@ export function MessageInput({ conversationId }: MessageInputProps) {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!message.trim() || !user) return
-
 		setIsLoading(true)
 		setError(null)
-
 		try {
-			const newMessage = {
+			const newMessage = await createMessage({
 				conversationId,
 				userId: user.userId,
 				user: user.user,
 				avatar: user.avatar,
-				messageType: "text" as const,
+				messageType: "text",
 				message: message.trim(),
-				timestamp: Date.now(),
-			}
-
-			const response = await createMessage(newMessage)
-			addMessage(conversationId, response.data)
+			})
+			addMessage(conversationId, newMessage.data)
 			setMessage("")
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "發送訊息失敗")

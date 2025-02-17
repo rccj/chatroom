@@ -5,6 +5,7 @@ import { useChatStore } from "@/stores/chat"
 import { MessageList } from "@/pages/chat/message-list"
 import { MessageInput } from "@/pages/chat/message-input"
 import { getMessages } from "@/api/messages"
+import { Avatar } from "@/components/ui/avatar"
 
 export function ChatRoomPage() {
 	const { id } = useParams<{ id: string }>()
@@ -54,12 +55,7 @@ export function ChatRoomPage() {
 
 				<div className="flex items-center gap-2">
 					{conversation.participants.map((participant) => (
-						<img
-							key={participant.userId}
-							src={participant.avatar}
-							alt={participant.user}
-							className="w-8 h-8 rounded-full"
-						/>
+						<Avatar key={participant.userId} src={participant.avatar} alt={participant.user} className="w-8 h-8" />
 					))}
 					<h2 className="font-medium">{conversation.participants.map((p) => p.user).join(", ")}</h2>
 				</div>

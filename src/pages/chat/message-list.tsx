@@ -1,7 +1,8 @@
-import { useMemo } from "react"
+import { useMemo, useEffect, useRef } from "react"
 import type { Message, User } from "@/types/chat"
 import { formatMessageDate, formatMessageTime } from "@/utils/date"
 import { useConversationStore } from "@/stores/conversation"
+import clsx from "clsx"
 
 const SystemMessage = ({ message }: { message: string }) => (
 	<div className="flex justify-center">
@@ -20,6 +21,20 @@ interface MessageListProps {
 
 export function MessageList({ messages, currentUser }: MessageListProps) {
 	const { addReaction } = useConversationStore()
+	const bottomRef = useRef<HTMLDivElement>(null)
+	const firstLoadRef = useRef(true)
+
+	useEffect(() => {
+		const lastMessage = messages[messages.length - 1]
+		if (firstLoadRef.current) {
+			bottomRef.current?.scrollIntoView()
+
+			firstLoadRef.current = false
+		}
+		if (lastMessage?.userId === currentUser?.userId && !firstLoadRef.current) {
+			bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+		}
+	}, [messages, currentUser?.userId])
 
 	// 按照日期分組訊息
 	const groupedMessages = useMemo(() => {
@@ -50,7 +65,9 @@ export function MessageList({ messages, currentUser }: MessageListProps) {
 						) : (
 							<div
 								key={message.timestamp}
-								className={`flex gap-4 ${message.userId === currentUser?.userId ? "flex-row-reverse" : ""}`}
+								className={clsx("flex gap-4", {
+									"flex-row-reverse": message.userId === currentUser?.userId,
+								})}
 							>
 								<img src={message.avatar} alt={message.user} className="w-8 h-8 rounded-full" />
 
@@ -103,6 +120,7 @@ export function MessageList({ messages, currentUser }: MessageListProps) {
 					)}
 				</div>
 			))}
+			<div ref={bottomRef} />
 		</div>
 	)
 }
