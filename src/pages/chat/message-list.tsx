@@ -17,24 +17,19 @@ const TextMessage = ({ message }: { message: string }) => <p className="break-wo
 interface MessageListProps {
 	messages: Message[]
 	currentUser: User | null
+	bottomRef: React.RefObject<HTMLDivElement> | null
 }
 
-export function MessageList({ messages, currentUser }: MessageListProps) {
+export function MessageList({ messages, currentUser, bottomRef }: MessageListProps) {
 	const { addReaction } = useConversationStore()
-	const bottomRef = useRef<HTMLDivElement>(null)
 	const firstLoadRef = useRef(true)
 
 	useEffect(() => {
-		const lastMessage = messages[messages.length - 1]
 		if (firstLoadRef.current) {
-			bottomRef.current?.scrollIntoView()
-
+			bottomRef?.current?.scrollIntoView()
 			firstLoadRef.current = false
 		}
-		if (lastMessage?.userId === currentUser?.userId && !firstLoadRef.current) {
-			bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-		}
-	}, [messages, currentUser?.userId])
+	}, [bottomRef])
 
 	// 按照日期分組訊息
 	const groupedMessages = useMemo(() => {

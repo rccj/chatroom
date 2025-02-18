@@ -5,9 +5,10 @@ import { createMessage } from "@/api/messages"
 
 interface MessageInputProps {
 	conversationId: number
+	bottomRef: React.RefObject<HTMLDivElement> | null
 }
 
-export function MessageInput({ conversationId }: MessageInputProps) {
+export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 	const [message, setMessage] = useState("")
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
@@ -29,6 +30,11 @@ export function MessageInput({ conversationId }: MessageInputProps) {
 				message: message.trim(),
 			})
 			addMessage(conversationId, newMessage.data)
+			setTimeout(() => {
+				if (bottomRef?.current) {
+					bottomRef.current.scrollIntoView({ behavior: "smooth" })
+				}
+			}, 0)
 			setMessage("")
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "發送訊息失敗")

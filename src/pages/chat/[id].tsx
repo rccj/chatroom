@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { useConversationStore } from "@/stores/conversation"
 import { useChatStore } from "@/stores/chat"
@@ -11,6 +11,7 @@ export function ChatRoomPage() {
 	const { id } = useParams<{ id: string }>()
 	const navigate = useNavigate()
 	const conversationId = Number(id)
+	const bottomRef = useRef<HTMLDivElement>(null)
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
@@ -95,12 +96,16 @@ export function ChatRoomPage() {
 						</button>
 					</div>
 				) : (
-					<MessageList messages={messages[conversationId] || []} currentUser={user} />
+					<MessageList
+						messages={messages[conversationId] || []}
+						currentUser={user}
+						bottomRef={bottomRef as React.RefObject<HTMLDivElement>}
+					/>
 				)}
 			</main>
 
 			<footer className="p-4 border-t">
-				<MessageInput conversationId={conversationId} />
+				<MessageInput conversationId={conversationId} bottomRef={bottomRef as React.RefObject<HTMLDivElement>} />
 			</footer>
 		</div>
 	)
