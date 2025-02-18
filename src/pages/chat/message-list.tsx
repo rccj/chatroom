@@ -5,6 +5,7 @@ import { useConversationStore } from "@/stores/conversation"
 import clsx from "clsx"
 import { useLongPress } from "@/hooks/use-long-press"
 import EmojiPicker from "emoji-picker-react"
+import { createPortal } from "react-dom"
 
 const SystemMessage = ({ message }: { message: string }) => (
 	<div className="flex justify-center">
@@ -12,7 +13,40 @@ const SystemMessage = ({ message }: { message: string }) => (
 	</div>
 )
 
-const ImageMessage = ({ src }: { src: string }) => <img src={src} alt="圖片訊息" className="max-w-[300px] rounded-lg" />
+interface ImagePreviewProps {
+	src: string
+	onClose: () => void
+}
+
+const ImagePreview = ({ src, onClose }: ImagePreviewProps) => {
+	return createPortal(
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+			<img
+				src={src}
+				alt="預覽圖片"
+				className="max-w-[90vw] max-h-[90vh] object-contain"
+				onClick={(e) => e.stopPropagation()}
+			/>
+		</div>,
+		document.body,
+	)
+}
+
+const ImageMessage = ({ src }: { src: string }) => {
+	const [showPreview, setShowPreview] = useState(false)
+
+	return (
+		<>
+			<img
+				src={src}
+				alt="圖片訊息"
+				className="max-w-[300px] rounded-lg cursor-pointer hover:opacity-90"
+				onClick={() => setShowPreview(true)}
+			/>
+			{showPreview && <ImagePreview src={src} onClose={() => setShowPreview(false)} />}
+		</>
+	)
+}
 
 const TextMessage = ({ message }: { message: string }) => <p className="break-words">{message}</p>
 

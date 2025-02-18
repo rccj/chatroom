@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useConversationStore } from "@/stores/conversation"
 import { useChatStore } from "@/stores/chat"
 import { createMessage } from "@/api/messages"
@@ -16,6 +16,7 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 	const { user } = useChatStore()
 	const { addMessage } = useConversationStore()
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+	const fileInputRef = useRef<HTMLInputElement>(null)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -46,6 +47,41 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 		}
 	}
 
+	const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0]
+		if (!file || !user) return
+
+		setIsLoading(true)
+		setError(null)
+		try {
+			const reader = new FileReader()
+			reader.onloadend = async () => {
+				const base64 = reader.result as string
+				const newMessage = await createMessage({
+					conversationId,
+					userId: user.userId,
+					user: user.user,
+					avatar: user.avatar,
+					messageType: "image",
+					message: base64,
+				})
+				addMessage(conversationId, newMessage.data)
+				if (bottomRef?.current) {
+					bottomRef.current.scrollIntoView({ behavior: "smooth" })
+				}
+			}
+			reader.readAsDataURL(file)
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "上傳圖片失敗")
+			console.error("上傳圖片失敗:", err)
+		} finally {
+			setIsLoading(false)
+			if (fileInputRef.current) {
+				fileInputRef.current.value = ""
+			}
+		}
+	}
+
 	const onEmojiClick = (emojiObject: EmojiClickData) => {
 		setMessage((prev) => prev + emojiObject.emoji)
 	}
@@ -69,6 +105,22 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 						className="p-2 text-gray-500 hover:text-gray-700"
 					>
 						😊
+					</button>
+					<input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+					<button
+						type="button"
+						onClick={() => fileInputRef.current?.click()}
+						className="p-2 text-gray-500 hover:text-gray-700"
+						disabled={isLoading}
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+							<path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
+							<path
+								fillRule="evenodd"
+								d="M1.5 9.75v7.5a3 3 0 003 3h15a3 3 0 003-3v-7.5h-21zm9.75 6a.75.75 0 01-.75.75h-3a.75.75 0 010-1.5h3a.75.75 0 01.75.75zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12z"
+								clipRule="evenodd"
+							/>
+						</svg>
 					</button>
 					<button
 						type="submit"
