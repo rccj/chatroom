@@ -7,7 +7,7 @@ interface Options {
 }
 
 export const useLongPress = ({ onLongPress, onClick, ms = 500 }: Options) => {
-	const timerRef = useRef<number>()
+	const timerRef = useRef<number>(null)
 	const isLongPress = useRef(false)
 
 	const start = useCallback(
@@ -22,7 +22,9 @@ export const useLongPress = ({ onLongPress, onClick, ms = 500 }: Options) => {
 	)
 
 	const clear = useCallback(() => {
-		window.clearTimeout(timerRef.current)
+		if (timerRef.current) {
+			window.clearTimeout(timerRef.current)
+		}
 		if (!isLongPress.current && onClick) {
 			onClick()
 		}
