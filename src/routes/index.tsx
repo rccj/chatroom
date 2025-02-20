@@ -6,38 +6,43 @@ import { ChatRoomPage } from "@/pages/chat/[id]"
 import { NotFoundPage } from "@/pages/not-found"
 import { useChatStore } from "@/stores/chat"
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+	[
+		{
+			path: "/",
+			element: <RootLayout />,
+			children: [
+				{
+					index: true,
+					element: <HomePage />,
+				},
+				{
+					path: "chat",
+					element: (
+						<ProtectedRoute>
+							<ChatPage />
+						</ProtectedRoute>
+					),
+				},
+				{
+					path: "chat/:id",
+					element: (
+						<ProtectedRoute>
+							<ChatRoomPage />
+						</ProtectedRoute>
+					),
+				},
+				{
+					path: "*",
+					element: <NotFoundPage />,
+				},
+			],
+		},
+	],
 	{
-		path: "/",
-		element: <RootLayout />,
-		children: [
-			{
-				index: true,
-				element: <HomePage />,
-			},
-			{
-				path: "chat",
-				element: (
-					<ProtectedRoute>
-						<ChatPage />
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: "chat/:id",
-				element: (
-					<ProtectedRoute>
-						<ChatRoomPage />
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: "*",
-				element: <NotFoundPage />,
-			},
-		],
+		basename: "/chatroom",
 	},
-])
+)
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	const { user } = useChatStore()
