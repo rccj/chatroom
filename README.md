@@ -1,50 +1,104 @@
-# React + TypeScript + Vite
+# Chatroom
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A chat application demo built with React and TypeScript, featuring emoji reactions, image sharing, and dark mode support.
 
-Currently, two official plugins are available:
+[Live Demo](https://rccj.github.io/chatroom)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Demo Screenshot](./public/screenshot-1.png)
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Current Features
+- 🎭 Multiple chat rooms
+- 👥 User avatars
+- 🌓 Dark mode support
+- 😊 Basic emoji reactions
+- 📸 Image sharing
+- 💾 Local storage persistence
+- 📱 Responsive design
 
-- Configure the top-level `parserOptions` property like this:
+### Planned Features
+- ⚡ Real-time messaging
+- ⌨️ Typing indicators
+- ✓ Message status
+- 🎯 Enhanced reactions
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Tech Stack
+
+- **Frontend Framework**: React 19 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: TailwindCSS
+- **State Management**: Zustand
+- **Routing**: React Router
+- **Code Quality**: Biome
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+
+- npm 9+
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/rccj/chatroom.git
+cd chatroom
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+2. Install dependencies
+```bash
+npm install
 ```
+
+3. Start development server
+```bash
+npm run dev
+```
+
+4. Open http://localhost:5173
+
+### Build & Deploy
+
+```bash
+# Build for production
+npm run build
+
+# Deploy to GitHub Pages
+npm run deploy
+```
+
+## Project Structure
+
+```
+src/
+├── api/          # API interfaces
+├── components/   # Reusable components
+├── hooks/        # Custom hooks
+├── pages/        # Page components
+├── stores/       # Zustand stores
+├── types/        # TypeScript types
+└── utils/        # Utility functions
+```
+
+## Current Features Detail
+
+### Chat Interface
+- Basic message sending and receiving
+- Image upload support
+- Emoji reactions (👍 ❤️ 😄)
+- Chat history persistence using localStorage
+
+### Dark Mode
+- System preference detection
+- Manual toggle
+- Persistent preference
+
+### Responsive Design
+- Mobile-first approach
+- Adaptive layouts
+- Touch-friendly interactions
+
+## License
+
+MIT © [rccj](https://github.com/rccj)
