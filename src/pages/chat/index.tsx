@@ -48,7 +48,7 @@ export function ChatPage() {
 	return (
 		<div className="flex flex-col h-screen">
 			<header className="flex items-center justify-between p-4 border-b">
-				<h1 className="text-xl font-bold">聊天室</h1>
+				<h1 className="text-xl font-bold flex-shrink-0">聊天室</h1>
 				<div className="flex items-center gap-4">
 					<span>歡迎, {user?.user}!</span>
 					<button onClick={handleLogout} className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md">

@@ -6,6 +6,7 @@ import { MessageList } from "@/pages/chat/message-list"
 import { MessageInput } from "@/pages/chat/message-input"
 import { getMessages } from "@/api/messages"
 import { Avatar } from "@/components/ui/avatar"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function ChatRoomPage() {
 	const { id } = useParams<{ id: string }>()
@@ -55,10 +56,31 @@ export function ChatRoomPage() {
 				</button>
 
 				<div className="flex items-center gap-2">
-					{conversation.participants.map((participant) => (
-						<Avatar key={participant.userId} src={participant.avatar} alt={participant.user} className="w-8 h-8" />
-					))}
-					<h2 className="font-medium">{conversation.participants.map((p) => p.user).join(", ")}</h2>
+					<div className="flex -space-x-2 flex-shrink-0">
+						{conversation.participants.slice(0, 2).map((participant) => (
+							<Avatar
+								key={participant.userId}
+								src={participant.avatar}
+								alt={participant.user}
+								className="w-8 h-8 border-2 border-white"
+							/>
+						))}
+						{conversation.participants.length > 2 && (
+							<div className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full border-2 border-white text-sm font-medium">
+								+{conversation.participants.length - 2}
+							</div>
+						)}
+					</div>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<h2 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h2>
+							</TooltipTrigger>
+							<TooltipContent>
+								<p>{conversation.participants.map((p) => p.user).join(", ")}</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 				</div>
 			</header>
 

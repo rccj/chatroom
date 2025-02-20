@@ -10,7 +10,7 @@ interface ConversationStore {
 
 	// Actions
 	setCurrentConversation: (id: number) => void
-	addMessage: (conversationId: number, message: Omit<Message, "id" | "reactions">) => void
+	addMessage: (conversationId: number, message: Message) => void
 	addReaction: (timestamp: number, type: "like" | "love" | "laugh") => void
 	setMessages: (conversationId: number, messages: Message[]) => void
 
@@ -29,19 +29,42 @@ export const useConversationStore = create<ConversationStore>()(
 
 			setCurrentConversation: (id) => set({ currentConversation: id }),
 
-			addMessage: (conversationId: number, message: Omit<Message, "id" | "reactions">) =>
+			addMessage: (conversationId, message) =>
 				set((state) => {
-					const newMessage = {
-						...message,
-						id: Date.now(),
-						reactions: { like: 0, love: 0, laugh: 0 },
+					// 更新訊息列表
+					const conversationMessages = state.messages[conversationId] || []
+					const newMessages = {
+						...state.messages,
+						[conversationId]: [...conversationMessages, message],
 					}
+					// 更新聊天室資訊
+					const updatedConversations = state.conversations.map((conv) => {
+						const newParticipant = {
+							userId: message.userId,
+							user: message.user,
+							avatar: message.avatar,
+						}
+
+						if (conv.participants.find((p) => p.userId === newParticipant.userId)) {
+							return conv
+						}
+
+						if (conv.id === conversationId) {
+							return {
+								...conv,
+								lastMessage: message.messageType === "text" ? message.message : "[圖片]",
+								timestamp: message.timestamp,
+								participants: conv.participants.find((p) => p.userId === newParticipant.userId)
+									? conv.participants
+									: [newParticipant, ...conv.participants],
+							}
+						}
+						return conv
+					})
 
 					return {
-						messages: {
-							...state.messages,
-							[conversationId]: [...(state.messages[conversationId] || []), newMessage],
-						},
+						messages: newMessages,
+						conversations: updatedConversations,
 					}
 				}),
 

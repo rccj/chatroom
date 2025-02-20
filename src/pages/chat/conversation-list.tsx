@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { useConversationStore } from "@/stores/conversation"
 import { formatMessageDate } from "@/utils/date"
 import { Avatar } from "@/components/ui/avatar"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export function ConversationList() {
 	const navigate = useNavigate()
@@ -17,8 +18,8 @@ export function ConversationList() {
 							 hover:scale-[1.01] active:scale-95"
 					onClick={() => navigate(`/chat/${conversation.id}`)}
 				>
-					<div className="flex -space-x-2">
-						{conversation.participants.map((participant) => (
+					<div className="flex -space-x-2 flex-shrink-0">
+						{conversation.participants.slice(0, conversation.participants.length >= 3 ? 1 : 2).map((participant) => (
 							<Avatar
 								key={participant.userId}
 								src={participant.avatar}
@@ -26,12 +27,28 @@ export function ConversationList() {
 								className="w-10 h-10 border-2 border-white"
 							/>
 						))}
+						{conversation.participants.length >= 3 && (
+							<div className="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-full border-2 border-white text-sm font-medium">
+								+{conversation.participants.length - 1}
+							</div>
+						)}
 					</div>
 
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center justify-between">
-							<h3 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h3>
-							<span className="text-sm text-gray-500">{formatMessageDate(conversation.timestamp, true)}</span>
+							<TooltipProvider>
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<h3 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h3>
+									</TooltipTrigger>
+									<TooltipContent>
+										<p>{conversation.participants.map((p) => p.user).join(", ")}</p>
+									</TooltipContent>
+								</Tooltip>
+							</TooltipProvider>
+							<span className="text-sm text-gray-500 flex-shrink-0">
+								{formatMessageDate(conversation.timestamp, true)}
+							</span>
 						</div>
 						<p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
 					</div>
