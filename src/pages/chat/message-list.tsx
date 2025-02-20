@@ -8,6 +8,7 @@ import EmojiPicker, { Theme } from "emoji-picker-react"
 import { createPortal } from "react-dom"
 import { useThemeStore } from "@/stores/theme"
 import { Avatar } from "@/components/ui/avatar"
+
 const SystemMessage = ({ message }: { message: string }) => (
 	<div className="flex justify-center">
 		<span className="px-4 py-2 text-sm text-gray-500 bg-gray-50 rounded-full">{message}</span>
@@ -76,7 +77,7 @@ interface MessageProps {
 	addReaction: (timestamp: number, type: "like" | "love" | "laugh") => void
 }
 
-const Message = ({ message, currentUser, onLongPress, onClick, addReaction }: MessageProps) => {
+const MessageItem = ({ message, currentUser, onLongPress, onClick, addReaction }: MessageProps) => {
 	const longPressProps = useLongPress({
 		onLongPress: (e) => onLongPress(e, message.timestamp),
 		onClick,
@@ -90,7 +91,7 @@ const Message = ({ message, currentUser, onLongPress, onClick, addReaction }: Me
 			})}
 		>
 			{message.userId === currentUser?.userId ? null : (
-				<Avatar src={message.avatar} alt={message.user} className="w-8 h-8 rounded-full" />
+				<Avatar src={message.avatar} alt={message.user} className="w-10 h-10 rounded-full border-2 border-white" />
 			)}
 
 			<div className="flex flex-col max-w-[70%]">
@@ -196,7 +197,7 @@ export function MessageList({ messages, currentUser, bottomRef }: MessageListPro
 						message.messageType === "system" ? (
 							<SystemMessage key={message.timestamp} message={message.message} />
 						) : (
-							<Message
+							<MessageItem
 								key={message.timestamp}
 								message={message}
 								currentUser={currentUser}

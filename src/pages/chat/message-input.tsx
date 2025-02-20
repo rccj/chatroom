@@ -5,6 +5,7 @@ import { createMessage } from "@/api/messages"
 import EmojiPicker, { type EmojiClickData, Theme } from "emoji-picker-react"
 import { Button } from "@/components/ui/button"
 import { useThemeStore } from "@/stores/theme"
+import { Input } from "@/components/ui/input"
 
 interface MessageInputProps {
 	conversationId: number
@@ -42,8 +43,8 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 			}, 0)
 			setMessage("")
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "發送訊息失敗")
-			console.error("發送訊息失敗:", err)
+			setError(err instanceof Error ? err.message : "Failed to send message")
+			console.error("Failed to send message:", err)
 		} finally {
 			setIsLoading(false)
 		}
@@ -74,8 +75,8 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 			}
 			reader.readAsDataURL(file)
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "上傳圖片失敗")
-			console.error("上傳圖片失敗:", err)
+			setError(err instanceof Error ? err.message : "Failed to upload image")
+			console.error("Failed to upload image:", err)
 		} finally {
 			setIsLoading(false)
 			if (fileInputRef.current) {
@@ -89,51 +90,39 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 	}
 
 	return (
-		<div className="relative">
+		<div className="relative px-4">
 			<div className="space-y-2">
 				{error && <p className="text-sm text-red-500">{error}</p>}
 				<form onSubmit={handleSubmit} className="flex items-center gap-2">
-					<input
+					<Input
 						type="text"
 						value={message}
 						onChange={(e) => setMessage(e.target.value)}
-						placeholder="輸入訊息..."
+						placeholder="Type a message..."
 						disabled={isLoading}
-						className="flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+						className="flex-1"
 					/>
-					<button
+					<Button
 						type="button"
 						onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-						className="p-2 text-gray-500 hover:text-gray-700"
+						variant="ghost"
+						size="icon"
+						className="text-gray-500 hover:text-gray-700"
 					>
 						😊
-					</button>
+					</Button>
 					<input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-					<button
+					<Button
 						type="button"
 						onClick={() => fileInputRef.current?.click()}
-						className="p-2 text-gray-500 hover:text-gray-700"
-						disabled={isLoading}
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-							<path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
-							<path
-								fillRule="evenodd"
-								d="M1.5 9.75v7.5a3 3 0 003 3h15a3 3 0 003-3v-7.5h-21zm9.75 6a.75.75 0 01-.75.75h-3a.75.75 0 010-1.5h3a.75.75 0 01.75.75zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12z"
-								clipRule="evenodd"
-							/>
-						</svg>
-					</button>
-					<Button
-						type="submit"
-						disabled={!message.trim() || isLoading}
-						variant="default"
+						variant="ghost"
 						size="icon"
-						className="rounded-full"
+						className="text-gray-500 hover:text-gray-700"
+						disabled={isLoading}
 					>
 						{isLoading ? (
 							<span className="flex items-center gap-2">
-								<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" role="status" aria-label="載入中">
+								<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" role="status" aria-label="Loading">
 									<circle
 										className="opacity-25"
 										cx="12"
@@ -149,10 +138,46 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 									/>
 								</svg>
-								發送中...
 							</span>
 						) : (
-							"發送"
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+								<path d="M4.5 3.75a3 3 0 00-3 3v.75h21v-.75a3 3 0 00-3-3h-15z" />
+								<path
+									fillRule="evenodd"
+									d="M1.5 9.75v7.5a3 3 0 003 3h15a3 3 0 003-3v-7.5h-21zm9.75 6a.75.75 0 01-.75.75h-3a.75.75 0 010-1.5h3a.75.75 0 01.75.75zM6 12a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V12z"
+									clipRule="evenodd"
+								/>
+							</svg>
+						)}
+					</Button>
+					<Button
+						type="submit"
+						disabled={!message.trim() || isLoading}
+						variant="default"
+						size="icon"
+						className="rounded-full"
+					>
+						{isLoading ? (
+							<span className="flex items-center gap-2">
+								<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" role="status" aria-label="Loading">
+									<circle
+										className="opacity-25"
+										cx="12"
+										cy="12"
+										r="10"
+										stroke="currentColor"
+										strokeWidth="4"
+										fill="none"
+									/>
+									<path
+										className="opacity-75"
+										fill="currentColor"
+										d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+									/>
+								</svg>
+							</span>
+						) : (
+							"Send"
 						)}
 					</Button>
 				</form>

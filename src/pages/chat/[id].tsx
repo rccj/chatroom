@@ -32,8 +32,8 @@ export function ChatRoomPage() {
 			const response = await getMessages(conversationId)
 			setMessages(conversationId, response.data)
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "載入訊息失敗")
-			console.error("載入訊息失敗:", err)
+			setError(err instanceof Error ? err.message : "Failed to load messages")
+			console.error("Failed to load messages:", err)
 		} finally {
 			setIsLoading(false)
 		}
@@ -49,8 +49,8 @@ export function ChatRoomPage() {
 	}
 
 	return (
-		<div className="flex flex-col h-screen dark:bg-gray-900">
-			<header className="flex items-center gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
+		<div className="flex flex-col h-screen dark:bg-gray-900 w-full max-w-4xl mx-auto">
+			<header className="h-16 flex items-center gap-4 px-4 border-b border-gray-200 dark:border-gray-700">
 				<button
 					onClick={() => navigate("/chat")}
 					className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -89,7 +89,7 @@ export function ChatRoomPage() {
 				</div>
 			</header>
 
-			<main className="flex-1 overflow-y-auto p-4">
+			<main className="flex-1 overflow-y-auto p-4 dark:bg-gray-900">
 				{isLoading ? (
 					<div className="flex items-center justify-center h-full">
 						<div className="flex flex-col items-center gap-2">
@@ -109,7 +109,7 @@ export function ChatRoomPage() {
 									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 								/>
 							</svg>
-							<span>載入訊息中...</span>
+							<span>Loading...</span>
 						</div>
 					</div>
 				) : error ? (
@@ -131,7 +131,7 @@ export function ChatRoomPage() {
 				)}
 			</main>
 
-			<footer className="p-4 border-t">
+			<footer className="p-4 border-t border-gray-200 dark:border-gray-700">
 				<MessageInput conversationId={conversationId} bottomRef={bottomRef as React.RefObject<HTMLDivElement>} />
 			</footer>
 		</div>
