@@ -2,7 +2,9 @@ import { useState, useRef } from "react"
 import { useConversationStore } from "@/stores/conversation"
 import { useChatStore } from "@/stores/chat"
 import { createMessage } from "@/api/messages"
-import EmojiPicker, { type EmojiClickData } from "emoji-picker-react"
+import EmojiPicker, { type EmojiClickData, Theme } from "emoji-picker-react"
+import { Button } from "@/components/ui/button"
+import { useThemeStore } from "@/stores/theme"
 
 interface MessageInputProps {
 	conversationId: number
@@ -122,14 +124,16 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 							/>
 						</svg>
 					</button>
-					<button
+					<Button
 						type="submit"
 						disabled={!message.trim() || isLoading}
-						className="px-4 py-2 text-white bg-blue-500 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+						variant="default"
+						size="icon"
+						className="rounded-full"
 					>
 						{isLoading ? (
 							<span className="flex items-center gap-2">
-								<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+								<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" role="status" aria-label="載入中">
 									<circle
 										className="opacity-25"
 										cx="12"
@@ -150,13 +154,17 @@ export function MessageInput({ conversationId, bottomRef }: MessageInputProps) {
 						) : (
 							"發送"
 						)}
-					</button>
+					</Button>
 				</form>
 			</div>
 
 			{showEmojiPicker && (
 				<div className="fixed bottom-20 right-8 z-50">
-					<EmojiPicker onEmojiClick={onEmojiClick} open={showEmojiPicker} />
+					<EmojiPicker
+						onEmojiClick={onEmojiClick}
+						open={showEmojiPicker}
+						theme={useThemeStore.getState().isDark ? Theme.DARK : Theme.LIGHT}
+					/>
 				</div>
 			)}
 		</div>

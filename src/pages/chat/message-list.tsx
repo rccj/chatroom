@@ -4,9 +4,10 @@ import { formatMessageDate, formatMessageTime } from "@/utils/date"
 import { useConversationStore } from "@/stores/conversation"
 import clsx from "clsx"
 import { useLongPress } from "@/hooks/use-long-press"
-import EmojiPicker from "emoji-picker-react"
+import EmojiPicker, { Theme } from "emoji-picker-react"
 import { createPortal } from "react-dom"
-
+import { useThemeStore } from "@/stores/theme"
+import { Avatar } from "@/components/ui/avatar"
 const SystemMessage = ({ message }: { message: string }) => (
 	<div className="flex justify-center">
 		<span className="px-4 py-2 text-sm text-gray-500 bg-gray-50 rounded-full">{message}</span>
@@ -88,18 +89,21 @@ const Message = ({ message, currentUser, onLongPress, onClick, addReaction }: Me
 				"flex-row-reverse": message.userId === currentUser?.userId,
 			})}
 		>
-			<img src={message.avatar} alt={message.user} className="w-8 h-8 rounded-full" />
+			{message.userId === currentUser?.userId ? null : (
+				<Avatar src={message.avatar} alt={message.user} className="w-8 h-8 rounded-full" />
+			)}
 
 			<div className="flex flex-col max-w-[70%]">
 				<div className="flex items-center gap-2 mb-1">
-					<span className="font-medium">{message.user}</span>
-					<span className="text-sm text-gray-500">{formatMessageTime(message.timestamp)}</span>
+					<span className="font-medium dark:text-gray-100">{message.user}</span>
+					<span className="text-sm text-gray-500 dark:text-gray-400">{formatMessageTime(message.timestamp)}</span>
 				</div>
 
 				<div
-					className={`p-3 rounded-lg ${
-						message.userId === currentUser?.userId ? "bg-blue-500 text-white" : "bg-gray-100"
-					}`}
+					className={clsx("p-3 rounded-lg", {
+						"bg-blue-500 text-white": message.userId === currentUser?.userId,
+						"bg-gray-100 dark:bg-gray-800 dark:text-gray-100": message.userId !== currentUser?.userId,
+					})}
 				>
 					{message.messageType === "text" && <TextMessage message={message.message} />}
 					{message.messageType === "image" && <ImageMessage src={message.message} />}
@@ -110,7 +114,7 @@ const Message = ({ message, currentUser, onLongPress, onClick, addReaction }: Me
 						{message.reactions.like > 0 && (
 							<button
 								onClick={() => addReaction(message.timestamp, "like")}
-								className="flex items-center gap-1 px-2 py-1 text-sm bg-white rounded-full shadow"
+								className="flex items-center gap-1 px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:text-gray-100 rounded-full shadow dark:shadow-gray-900"
 							>
 								👍 <span>{message.reactions.like}</span>
 							</button>
@@ -118,7 +122,7 @@ const Message = ({ message, currentUser, onLongPress, onClick, addReaction }: Me
 						{message.reactions.love > 0 && (
 							<button
 								onClick={() => addReaction(message.timestamp, "love")}
-								className="flex items-center gap-1 px-2 py-1 text-sm bg-white rounded-full shadow"
+								className="flex items-center gap-1 px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:text-gray-100 rounded-full shadow dark:shadow-gray-900"
 							>
 								❤️ <span>{message.reactions.love}</span>
 							</button>
@@ -126,7 +130,7 @@ const Message = ({ message, currentUser, onLongPress, onClick, addReaction }: Me
 						{message.reactions.laugh > 0 && (
 							<button
 								onClick={() => addReaction(message.timestamp, "laugh")}
-								className="flex items-center gap-1 px-2 py-1 text-sm bg-white rounded-full shadow"
+								className="flex items-center gap-1 px-2 py-1 text-sm bg-white dark:bg-gray-800 dark:text-gray-100 rounded-full shadow dark:shadow-gray-900"
 							>
 								😄 <span>{message.reactions.laugh}</span>
 							</button>
@@ -183,7 +187,9 @@ export function MessageList({ messages, currentUser, bottomRef }: MessageListPro
 			{Object.entries(groupedMessages).map(([date, msgs]) => (
 				<div key={date} className="space-y-4">
 					<div className="flex justify-center">
-						<span className="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded">{date}</span>
+						<span className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded">
+							{date}
+						</span>
 					</div>
 
 					{msgs.map((message) =>
@@ -212,18 +218,21 @@ export function MessageList({ messages, currentUser, bottomRef }: MessageListPro
 						top: `${pickerPosition.y}px`,
 					}}
 				>
-					<EmojiPicker
-						onEmojiClick={(emojiData) => {
-							if (selectedMessage) {
-								addReaction(selectedMessage, emojiMap[emojiData.unified])
-								setShowEmojiPicker(false)
-								setSelectedMessage(null)
-							}
-						}}
-						reactions={["1f44d", "2764-fe0f", "1f604"]}
-						reactionsDefaultOpen={true}
-						allowExpandReactions={false}
-					/>
+					<div className="dark:bg-gray-800 rounded-lg">
+						<EmojiPicker
+							onEmojiClick={(emojiData) => {
+								if (selectedMessage) {
+									addReaction(selectedMessage, emojiMap[emojiData.unified])
+									setShowEmojiPicker(false)
+									setSelectedMessage(null)
+								}
+							}}
+							reactions={["1f44d", "2764-fe0f", "1f604"]}
+							reactionsDefaultOpen={true}
+							allowExpandReactions={false}
+							theme={useThemeStore.getState().isDark ? Theme.DARK : Theme.LIGHT}
+						/>
+					</div>
 				</div>
 			)}
 		</div>

@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en_US">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Chat Room</title>
+    <script>
+      // 在 JS 加載前就設置初始主題，避免閃爍
+      if (localStorage.getItem('theme-storage') !== null) {
+        const themeStorage = JSON.parse(localStorage.getItem('theme-storage'))
+        if (themeStorage.state.isDark) {
+          document.documentElement.classList.add('dark')
+        }
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

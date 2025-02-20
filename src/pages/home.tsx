@@ -25,8 +25,8 @@ export function HomePage() {
 	}
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen gap-4">
-			<h1 className="text-4xl font-bold">Chat Room</h1>
+		<div className="flex flex-col items-center justify-center min-h-screen gap-4 dark:bg-gray-900">
+			<h1 className="text-4xl font-bold dark:text-gray-100">Chat Room</h1>
 			<div className="flex flex-col items-center gap-4">
 				<Avatar src={DEFAULT_AVATAR} alt="預設頭像" className="w-20 h-20" />
 				<input
@@ -35,7 +35,7 @@ export function HomePage() {
 					value={username}
 					onChange={(e) => setUsername(e.target.value)}
 					placeholder="輸入使用者名稱"
-					className="px-4 py-2 border rounded-md bg-gray-100"
+					className="px-4 py-2 border rounded-md bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-400"
 				/>
 				<Button onClick={handleJoin}>加入聊天室</Button>
 			</div>

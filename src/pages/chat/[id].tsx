@@ -49,9 +49,12 @@ export function ChatRoomPage() {
 	}
 
 	return (
-		<div className="flex flex-col h-screen">
-			<header className="flex items-center gap-4 p-4 border-b">
-				<button onClick={() => navigate("/chat")} className="text-gray-500 hover:text-gray-700">
+		<div className="flex flex-col h-screen dark:bg-gray-900">
+			<header className="flex items-center gap-4 p-4 border-b border-gray-200 dark:border-gray-700">
+				<button
+					onClick={() => navigate("/chat")}
+					className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+				>
 					←
 				</button>
 
@@ -66,7 +69,7 @@ export function ChatRoomPage() {
 							/>
 						))}
 						{conversation.participants.length > 2 && (
-							<div className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full border-2 border-white text-sm font-medium">
+							<div className="w-8 h-8 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full border-2 border-white dark:border-gray-900 text-sm font-medium dark:text-gray-100">
 								+{conversation.participants.length - 2}
 							</div>
 						)}
@@ -74,9 +77,11 @@ export function ChatRoomPage() {
 					<TooltipProvider>
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<h2 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h2>
+								<h2 className="font-medium truncate dark:text-gray-100">
+									{conversation.participants.map((p) => p.user).join(", ")}
+								</h2>
 							</TooltipTrigger>
-							<TooltipContent>
+							<TooltipContent className="dark:bg-gray-800 dark:text-gray-100">
 								<p>{conversation.participants.map((p) => p.user).join(", ")}</p>
 							</TooltipContent>
 						</Tooltip>

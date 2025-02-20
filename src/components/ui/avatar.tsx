@@ -1,5 +1,6 @@
 import { useState } from "react"
 import clsx from "clsx"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface AvatarProps {
 	src: string
@@ -12,7 +13,7 @@ export function Avatar({ src, alt, className }: AvatarProps) {
 
 	return (
 		<div className="relative">
-			{isLoading && <div className={clsx("absolute inset-0 bg-gray-200 rounded-full animate-pulse", className)} />}
+			{isLoading && <Skeleton className={clsx("absolute inset-0 rounded-full", className)} />}
 			<img src={src} alt={alt} className={clsx("rounded-full", className)} onLoad={() => setIsLoading(false)} />
 		</div>
 	)

@@ -8,14 +8,15 @@ export function ConversationList() {
 	const navigate = useNavigate()
 	const { conversations } = useConversationStore()
 	return (
-		<div className="divide-y transition-all duration-300 ease-in-out transform">
+		<div className="divide-y divide-gray-200 dark:divide-gray-700 transition-all duration-300 ease-in-out transform">
 			{conversations.map((conversation) => (
 				<button
 					key={conversation.id}
 					className="flex items-center gap-4 p-4 w-full text-left 
-							 hover:bg-gray-50 cursor-pointer
+							 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer
 							 transition-all duration-200 ease-in-out 
-							 hover:scale-[1.01] active:scale-95"
+							 hover:scale-[1.01] active:scale-95
+							 dark:text-gray-100"
 					onClick={() => navigate(`/chat/${conversation.id}`)}
 				>
 					<div className="flex -space-x-2 flex-shrink-0">
@@ -28,7 +29,7 @@ export function ConversationList() {
 							/>
 						))}
 						{conversation.participants.length >= 3 && (
-							<div className="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-full border-2 border-white text-sm font-medium">
+							<div className="w-10 h-10 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full border-2 border-white dark:border-gray-900 text-sm font-medium dark:text-gray-100">
 								+{conversation.participants.length - 1}
 							</div>
 						)}
@@ -39,18 +40,20 @@ export function ConversationList() {
 							<TooltipProvider>
 								<Tooltip>
 									<TooltipTrigger asChild>
-										<h3 className="font-medium truncate">{conversation.participants.map((p) => p.user).join(", ")}</h3>
+										<h3 className="font-medium truncate dark:text-gray-100">
+											{conversation.participants.map((p) => p.user).join(", ")}
+										</h3>
 									</TooltipTrigger>
-									<TooltipContent>
+									<TooltipContent className="dark:bg-gray-800 dark:text-gray-100">
 										<p>{conversation.participants.map((p) => p.user).join(", ")}</p>
 									</TooltipContent>
 								</Tooltip>
 							</TooltipProvider>
-							<span className="text-sm text-gray-500 flex-shrink-0">
+							<span className="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
 								{formatMessageDate(conversation.timestamp, true)}
 							</span>
 						</div>
-						<p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
+						<p className="text-sm text-gray-500 dark:text-gray-400 truncate">{conversation.lastMessage}</p>
 					</div>
 				</button>
 			))}
